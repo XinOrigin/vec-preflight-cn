@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vec-preflight-cn"
+version = "0.1.0"
+description = "Pre-submission validator, official floor/ceiling skill-score wrapper, Agent Team evidence checker, and bilingual (ZH/EN) guide for the Virtual Embryo Challenge (NeurIPS 2026)."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "scipy",
+    "anndata",
+]
+
+[project.optional-dependencies]
+scoring = [
+    "scikit-learn",
+    "veckit",
+]
+dev = [
+    "pytest",
+    "scikit-learn",
+]
+
+[project.scripts]
+vec-preflight = "vec_preflight.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["vec_preflight*"]
