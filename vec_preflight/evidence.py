@@ -38,10 +38,16 @@ class EvidenceReport:
         return asdict(self)
 
 
+TEXT_SUFFIXES: set[str] = {
+    ".json", ".jsonl", ".txt", ".md", ".py", ".sh", ".yaml", ".yml",
+    ".toml", ".log", ".csv", ".ipynb", ".cfg", ".ini", ".env", "",
+}
+
+
 def _classify_file(path: Path) -> str | None:
-    low = path.name.lower()
+    words = [w for w in re.split(r"[^a-z0-9]+", path.name.lower()) if w]
     for kind, tokens in EVIDENCE_PATTERNS.items():
-        if any(tok in low for tok in tokens):
+        if any(w in tokens or w.rstrip("s") in tokens for w in words):
             return kind
     return None
 
@@ -74,7 +80,7 @@ def validate_evidence_bundle(directory: str | Path) -> EvidenceReport:
             detected[kind].append(rel)
 
         # Validate UTF-8 readability and JSON/JSONL structure where applicable
-        if f.suffix.lower() in {".json", ".jsonl", ".txt", ".md", ".py", ".sh", ".yaml", ".yml", ".toml"}:
+        if f.suffix.lower() in TEXT_SUFFIXES:
             try:
                 text = f.read_text(encoding="utf-8")
             except UnicodeDecodeError as exc:

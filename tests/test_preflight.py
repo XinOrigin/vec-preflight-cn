@@ -146,6 +146,18 @@ def test_evidence_bundle_validation(tmp_path: Path):
     assert any("github_pat" in msg for msg in r3.issues)
 
 
+def test_evidence_word_tokens_and_log_secret_scan(tmp_path: Path):
+    d = tmp_path / "ev"
+    d.mkdir()
+    (d / "prompts.txt").write_text("p\n", encoding="utf-8")
+    (d / "catalog.md").write_text("x\n", encoding="utf-8")
+    assert not validate_evidence_bundle(d).ok
+    (d / "session.log").write_text("k=sk-" + "A" * 24 + "\n", encoding="utf-8")
+    r = validate_evidence_bundle(d)
+    assert "session.log" in r.detected_kinds["trajectory"]
+    assert any("openai_key" in m and "session.log" in m for m in r.issues)
+
+
 @pytest.mark.skipif(not (VECKIT_DIR / "data" / "sample_8.5.h5ad").exists(), reason="local veckit samples absent")
 def test_real_veckit_samples_preflight_and_rescaled_score(capsys):
     data = VECKIT_DIR / "data"
