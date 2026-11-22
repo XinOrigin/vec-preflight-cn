@@ -187,6 +187,7 @@ def rescale_panel_to_skill(
     headline_score = round(headline / total_weight, 2) if total_weight > 0 else 0.0
     return {
         "task": task,
+        "weights_source": "official" if task == "T1" else "local_diagnostic",
         "headline_skill_100": headline_score,
         "beats_floor": headline_score > 50.0,
         "group_scores_100": group_scores,

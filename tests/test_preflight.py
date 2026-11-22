@@ -189,3 +189,48 @@ def test_real_veckit_samples_preflight_and_rescaled_score(capsys):
     assert rc == 0
     out = json.loads(capsys.readouterr().out)
     assert out["ok"] is True
+
+
+def test_validator_handles_sparse_coords_and_duplicate_genes(tmp_path: Path):
+    from scipy import sparse
+
+    # Sparse nonnegative X should pass T1
+    p_sparse = tmp_path / "sparse.h5ad"
+    a = ad.AnnData(X=sparse.csr_matrix(np.eye(10, 4, dtype=np.float32)))
+    a.var_names = ["G0", "G1", "G2", "G3"]
+    a.write_h5ad(p_sparse)
+    assert validate_h5ad(p_sparse, "T1").ok
+
+    # 2-column spatial_3D should fail T2
+    p_2col = _make_h5ad(
+        tmp_path / "two_col.h5ad",
+        np.ones((8, 4), dtype=np.float32),
+        spatial_key="spatial_3D",
+        coords=np.zeros((8, 2), dtype=np.float32),
+    )
+    assert not validate_h5ad(p_2col, "T2").ok
+
+    # NaN in spatial_3D should fail T2
+    coords_nan = np.zeros((8, 3), dtype=np.float32)
+    coords_nan[0, 1] = np.nan
+    p_nan_c = _make_h5ad(
+        tmp_path / "nan_coords.h5ad",
+        np.ones((8, 4), dtype=np.float32),
+        spatial_key="spatial_3D",
+        coords=coords_nan,
+    )
+    assert not validate_h5ad(p_nan_c, "T2").ok
+
+    # Duplicate var_names should fail
+    p_dup = _make_h5ad(
+        tmp_path / "dup.h5ad",
+        np.ones((8, 3), dtype=np.float32),
+        genes=["G0", "G0", "G1"],
+    )
+    assert not validate_h5ad(p_dup, "T1").ok
+
+    # weights_source distinction: official for T1, local_diagnostic for T2/T3
+    r_t1 = rescale_panel_to_skill("T1", {"de_score": 0.5}, {"de_score": 0.2}, {"de_score": 0.8})
+    r_t2 = rescale_panel_to_skill("T2", {"de_score": 0.5}, {"de_score": 0.2}, {"de_score": 0.8})
+    assert r_t1["weights_source"] == "official"
+    assert r_t2["weights_source"] == "local_diagnostic"

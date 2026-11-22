@@ -18,7 +18,7 @@ dependencies = [
 [project.optional-dependencies]
 scoring = [
     "scikit-learn",
-    "veckit",
+    "veckit @ git+https://github.com/aristoteleo/vec_baselines.git",
 ]
 dev = [
     "pytest",
