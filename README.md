@@ -25,8 +25,9 @@
 git clone https://github.com/XinOrigin/vec-preflight-cn.git
 cd vec-preflight-cn
 pip install -e .
-# Optional: install veckit if you want `vec-preflight score`
-pip install veckit
+# 国内镜像加速: pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -e .
+# Optional: install veckit if you want `vec-preflight score` (or pass --veckit-dir /path/to/veckit)
+pip install git+https://github.com/aristoteleo/vec_baselines.git
 ```
 
 ### 1. Pre-submission `.h5ad` validation / 提交前 `.h5ad` 格式与尺度体检

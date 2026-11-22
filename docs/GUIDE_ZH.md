@@ -4,6 +4,18 @@
 
 ---
 
+## 0. 环境安装（Python >= 3.10）
+
+```bash
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -e .
+# 如需本地计算 0-100 标度分，请安装官方 veckit（或命令中传入 --veckit-dir）：
+pip install git+https://github.com/aristoteleo/vec_baselines.git
+```
+
+> **配套生态工具链**：`vec-preflight-cn`（格式与证据门禁） · `vec-baseline-bench-cn`（无泄漏多基线评测） · `vec-metric-lens-cn`（基因/细胞类型归因与置信区间） · `vec-spatial-qc-cn`（3D 空间几何与邻域质控）。
+
+---
+
 ## 1. 赛事总览与关键时间节点（P3 终审阶段）
 
 Virtual Embryo Challenge 由斯坦福大学 Qiu Lab 主办（Laude Institute Moonshots Seed Grant 资助），作为 **NeurIPS 2026 官方竞赛** 举办，总奖池 **$112K**：
